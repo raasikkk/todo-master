@@ -101,6 +101,9 @@ const todoSlice = createSlice({
         date: new Date(action.payload.date).toLocaleDateString("en-GB"),
       };
       set(newTodoRef, newTodo); // Save the todo to Firebase
+
+      // Update state.todos to include the new todo
+      state.todos.unshift(newTodo); // Add the new todo to the front of the list
     },
     toggleTodo: (state, action: PayloadAction<string>) => {
       const todoId = action.payload;
@@ -108,12 +111,18 @@ const todoSlice = createSlice({
       if (todo) {
         todo.completed = !todo.completed;
         update(ref(database, `todos/${todoId}`), { completed: todo.completed });
+
+        // Optionally, update the state with the new completion status
+        const index = state.todos.findIndex((todo) => todo.id === todoId);
+        if (index !== -1) {
+          state.todos[index].completed = todo.completed;
+        }
       }
     },
     deleteTodo: (state, action: PayloadAction<string>) => {
       const todoId = action.payload;
       state.todos = state.todos.filter((todo) => todo.id !== todoId);
-      remove(ref(database, `todos/${todoId}`));
+      remove(ref(database, `todos/${todoId}`)); // Remove from Firebase
     },
   },
 });
