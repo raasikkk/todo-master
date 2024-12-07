@@ -1,5 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { RootState } from "@reduxjs/toolkit/query";
-const store = configureStore({});
+import counterReducer from "./counter/counterSlice";
+import todoReducer from "./todo/todoSlice";
 
-export default store;
+export const store = configureStore({
+  reducer: {
+    counter: counterReducer,
+    todo: todoReducer,
+  },
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
