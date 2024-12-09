@@ -7,9 +7,13 @@ export default {
         center: true,
         padding: {
           DEFAULT: "2rem",
-          xl: "10rem",
         },
         screens: {
+          xs: "360px", // Custom extra small breakpoint
+          sm: "360px",
+          md: "768px",
+          lg: "1024px",
+          xl: "1280px",
           "2xl": "1790px",
         },
       },
