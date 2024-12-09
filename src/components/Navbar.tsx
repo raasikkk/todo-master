@@ -3,11 +3,11 @@ const Navbar = () => {
     <>
       <nav className="bg-violet-700 min-h-12 shadow-sm shadow-violet-700/50">
         <div className="container flex justify-between items-center p-4">
-          <div className="xs:text-lg sm:text-xl md:text-2xl font-semibold">
+          <div className="xs:text-lg sm:text-xl md:text-2xl font-semibold text-white">
             raasikkk.webdev
           </div>
 
-          <ul className="flex gap-5 text-3xl">
+          <ul className="flex gap-5 text-3xl text-white">
             <a href="https://www.linkedin.com/in/rasul-zhankeldyuly/">
               <i className="fa-brands fa-linkedin "></i>
             </a>
