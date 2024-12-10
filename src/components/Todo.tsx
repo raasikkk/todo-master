@@ -6,11 +6,11 @@ import {
   toggleTodo,
   deleteTodo,
   setTodos,
+  renameTodo,
 } from "../state/todo/todoSlice";
 import { database } from "../firebaseConfig";
 import { ref, onValue } from "firebase/database";
 
-// Define a type for the Todo object
 interface Todo {
   id: string;
   title: string;
@@ -23,6 +23,8 @@ const Todo = () => {
   const todos = useSelector((state: RootState) => state.todo.todos);
   const [newTodo, setNewTodo] = useState("");
   const [newDate, setNewDate] = useState("");
+  const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
+  const [newTitle, setNewTitle] = useState("");
 
   // Fetch todos from Firebase on component mount
   useEffect(() => {
@@ -30,13 +32,12 @@ const Todo = () => {
     const unsubscribe = onValue(todosRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        // Map the Firebase data to an array of Todo objects
         const todosArray = Object.entries(data).map(
           ([id, todo]: [string, unknown]) => ({
             id,
             title: (todo as { title: string }).title,
             date: (todo as { date: string }).date,
-            completed: (todo as { completed: boolean }).completed || false, // Handle incomplete data
+            completed: (todo as { completed: boolean }).completed || false,
           })
         );
         dispatch(setTodos(todosArray));
@@ -45,7 +46,7 @@ const Todo = () => {
       }
     });
 
-    return () => unsubscribe(); // Cleanup listener on unmount
+    return () => unsubscribe();
   }, [dispatch]);
 
   const handleAddTodo = () => {
@@ -53,6 +54,14 @@ const Todo = () => {
       dispatch(addTodo({ title: newTodo, date: newDate }));
       setNewTodo("");
       setNewDate("");
+    }
+  };
+
+  const handleRenameTodo = (todoId: string) => {
+    if (newTitle.trim()) {
+      dispatch(renameTodo({ id: todoId, newTitle }));
+      setEditingTodoId(null);
+      setNewTitle("");
     }
   };
 
@@ -77,10 +86,11 @@ const Todo = () => {
           onChange={(e) => setNewDate(e.target.value)}
           placeholder="Set a new date"
         />
-        <button className="todo-btn" onClick={handleAddTodo}>
+        <button className="todo-btn w-full md:w-auto" onClick={handleAddTodo}>
           Add Todo
         </button>
       </div>
+
       <ul className="todo-ul">
         {todos.map((todo) => (
           <li
@@ -91,7 +101,7 @@ const Todo = () => {
           >
             <span className="font-semibold text-lg">{todo.title}</span>
             <span>Due Date: {todo.date}</span>
-            <div className="flex flex-wrap mt-3 gap-3 ">
+            <div className="flex flex-wrap mt-5 justify-between md:justify-normal md:gap-3">
               <button
                 className={`${
                   todo.completed ? "bg-green-600" : "bg-blue-600"
@@ -108,7 +118,32 @@ const Todo = () => {
               >
                 Delete
               </button>
+              <button
+                className="bg-yellow-600 text-white rounded-md p-1 px-3"
+                onClick={() => {
+                  setEditingTodoId(todo.id);
+                  setNewTitle(todo.title);
+                }}
+              >
+                Rename
+              </button>
             </div>
+            {editingTodoId === todo.id && (
+              <div className="mt-5 flex flex-wrap gap-3">
+                <input
+                  className="todo-input "
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                />
+                <button
+                  className="todo-btn w-full md:w-auto mx-auto md:mx-0 md:px-5"
+                  onClick={() => handleRenameTodo(todo.id)}
+                >
+                  Save
+                </button>
+              </div>
+            )}
           </li>
         ))}
       </ul>

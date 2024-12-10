@@ -9,7 +9,7 @@ export default {
           DEFAULT: "2rem",
         },
         screens: {
-          xs: "360px", // Custom extra small breakpoint
+          xs: "360px", // Custom extra small
           sm: "360px",
           md: "768px",
           lg: "1024px",
